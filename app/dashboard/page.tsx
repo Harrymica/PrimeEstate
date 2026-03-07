@@ -1,4 +1,4 @@
-import { requireRole } from '@/lib/auth-helpers';
+import { getCurrentUserProfile } from '@/lib/auth-helpers';
 import { createClient } from '@/lib/supabase/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,9 +6,22 @@ import { MapPin, Home, Calendar, FileText, Search } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { parseImageUrls } from '@/lib/parse-images';
+import { redirect } from 'next/navigation';
 
 export default async function TenantDashboard() {
-  const profile = await requireRole('tenant');
+  const profile = await getCurrentUserProfile();
+
+  if (!profile) {
+    redirect('/auth/login');
+  }
+
+  // Redirect landlords and admins to their respective dashboards
+  if (profile.role === 'landlord') {
+    redirect('/dashboard/landlord');
+  }
+  if (profile.role === 'admin') {
+    redirect('/dashboard/admin');
+  }
   const supabase = await createClient();
 
   // Fetch available properties

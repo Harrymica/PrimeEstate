@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { UserRole } from '@/lib/types';
 import { validateEmail } from '@/lib/validate-email';
@@ -231,7 +231,14 @@ export default function SignupPage() {
             </div>
 
             <Button type="submit" className="w-full" disabled={loading || !!emailError}>
-              {loading ? 'Creating account...' : 'Sign Up'}
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                'Sign Up'
+              )}
             </Button>
           </form>
 
