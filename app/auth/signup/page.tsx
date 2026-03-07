@@ -13,9 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { UserRole } from '@/lib/types';
+import { validateEmail } from '@/lib/validate-email';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -24,18 +25,61 @@ export default function SignupPage() {
   const [role, setRole] = useState<UserRole>('tenant');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [emailSuggestion, setEmailSuggestion] = useState<string | null>(null);
+  const [emailValid, setEmailValid] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+
+  function handleEmailChange(value: string) {
+    setEmail(value);
+    setEmailError(null);
+    setEmailSuggestion(null);
+    setEmailValid(false);
+
+    if (value.length === 0) return;
+
+    // Only validate once user has typed a reasonable email (has @ and something after)
+    if (value.includes('@') && value.indexOf('@') < value.length - 1) {
+      const result = validateEmail(value);
+      if (!result.isValid) {
+        setEmailError(result.error || null);
+        setEmailSuggestion(result.suggestion || null);
+      } else {
+        setEmailValid(true);
+      }
+    }
+  }
+
+  function applySuggestion() {
+    if (emailSuggestion) {
+      setEmail(emailSuggestion);
+      setEmailError(null);
+      setEmailSuggestion(null);
+      setEmailValid(true);
+    }
+  }
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    // Final email validation before submit
+    const result = validateEmail(email);
+    if (!result.isValid) {
+      setEmailError(result.error || 'Please enter a valid email address.');
+      setEmailSuggestion(result.suggestion || null);
+      return;
+    }
+
     setLoading(true);
 
     try {
+      const normalizedEmail = email.trim().toLowerCase();
+
       // Create auth user with metadata (name + role stored in auth.users)
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email,
+        email: normalizedEmail,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
@@ -62,7 +106,7 @@ export default function SignupPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: authData.user.id,
-          email,
+          email: normalizedEmail,
           fullName: name,
           role,
         }),
@@ -119,14 +163,42 @@ export default function SignupPage() {
               <label htmlFor="email" className="text-sm font-medium">
                 Email Address
               </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="email"
+                  type="text"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => handleEmailChange(e.target.value)}
+                  className={emailError ? 'border-red-400 focus-visible:ring-red-400' : emailValid ? 'border-green-400 focus-visible:ring-green-400' : ''}
+                  required
+                />
+                {emailValid && (
+                  <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+                )}
+              </div>
+              {emailError && (
+                <div className="text-sm text-red-600 flex items-start gap-1.5">
+                  <AlertCircle className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
+                  <span>
+                    {emailSuggestion ? (
+                      <>
+                        Did you mean{' '}
+                        <button
+                          type="button"
+                          onClick={applySuggestion}
+                          className="font-semibold text-blue-600 hover:underline cursor-pointer"
+                        >
+                          {emailSuggestion}
+                        </button>
+                        ?
+                      </>
+                    ) : (
+                      emailError
+                    )}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -158,7 +230,7 @@ export default function SignupPage() {
               </Select>
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full" disabled={loading || !!emailError}>
               {loading ? 'Creating account...' : 'Sign Up'}
             </Button>
           </form>
