@@ -77,7 +77,6 @@ export async function POST(request: NextRequest) {
         const supabase = await createClient();
         await supabase.from('payments').insert({
             booking_id: bookingId,
-            inspection_id: inspectionId || null,
             tenant_id: user.id,
             landlord_id: landlordId,
             amount,
