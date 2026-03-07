@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/auth-helpers';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function POST(request: NextRequest) {
     try {
@@ -12,6 +11,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
         const { inspectionId, bookingId, propertyAddress, amount } = await request.json();
 
         if (!bookingId || !amount) {
@@ -19,6 +19,27 @@ export async function POST(request: NextRequest) {
                 { error: 'Missing bookingId or amount' },
                 { status: 400 }
             );
+        }
+
+        // Look up landlord_id from the inspection → property chain
+        let landlordId: string | null = null;
+        if (inspectionId) {
+            const adminSupabase = createAdminClient();
+            const { data: inspection } = await adminSupabase
+                .from('inspections')
+                .select('property_id')
+                .eq('id', inspectionId)
+                .single();
+
+            if (inspection?.property_id) {
+                const { data: property } = await adminSupabase
+                    .from('properties')
+                    .select('landlord_id')
+                    .eq('id', inspection.property_id)
+                    .single();
+
+                landlordId = property?.landlord_id || null;
+            }
         }
 
         const origin = request.headers.get('origin') || 'http://localhost:3000';
@@ -52,11 +73,13 @@ export async function POST(request: NextRequest) {
             cancel_url: `${origin}/properties`,
         });
 
-        // Save payment record with status pending
+        // Save payment record with status pending, including landlord_id
         const supabase = await createClient();
         await supabase.from('payments').insert({
             booking_id: bookingId,
+            inspection_id: inspectionId || null,
             tenant_id: user.id,
+            landlord_id: landlordId,
             amount,
             currency: 'usd',
             status: 'pending',
@@ -72,3 +95,4 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+

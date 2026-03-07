@@ -9,23 +9,11 @@ export default async function PaymentsPage() {
   const profile = await requireRole('landlord');
   const supabase = await createClient();
 
-  // Fetch landlord's properties
-  const { data: properties } = await supabase
-    .from('properties')
-    .select('id')
-    .eq('landlord_id', profile.id);
-
-  // Fetch all payments for landlord's property inspections
+  // Fetch all payments for this landlord directly using landlord_id
   const { data: allPayments } = await supabase
     .from('payments')
-    .select('*, inspections(properties(title, address))')
-    .in('inspection_id', 
-      (await supabase
-        .from('inspections')
-        .select('id')
-        .in('property_id', properties?.map(p => p.id) || [])
-      ).data?.map((i: any) => i.id) || []
-    )
+    .select('*, bookings(visit_date, status, inspections(properties(address, city, state)))')
+    .eq('landlord_id', profile.id)
     .order('created_at', { ascending: false });
 
   const completed = allPayments?.filter(p => p.status === 'completed') || [];
@@ -36,40 +24,44 @@ export default async function PaymentsPage() {
   const totalEarnings = completed.reduce((sum: number, p: any) => sum + p.amount, 0);
   const totalPending = pending.reduce((sum: number, p: any) => sum + p.amount, 0);
 
-  const PaymentRow = ({ payment, status }: any) => (
-    <tr className="border-t border-slate-200 hover:bg-slate-50">
-      <td className="px-6 py-4">
-        <div>
-          <p className="font-medium text-slate-900">{payment.inspections?.properties?.title}</p>
-          <p className="text-sm text-slate-600">{payment.inspections?.properties?.address}</p>
-        </div>
-      </td>
-      <td className="px-6 py-4 text-right">
-        <span className="font-semibold text-slate-900">${payment.amount.toFixed(2)}</span>
-      </td>
-      <td className="px-6 py-4">
-        <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
-          status === 'completed'
-            ? 'bg-green-100 text-green-700'
-            : status === 'pending'
-              ? 'bg-yellow-100 text-yellow-700'
-              : status === 'failed'
-                ? 'bg-red-100 text-red-700'
-                : 'bg-gray-100 text-gray-700'
-        }`}>
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </span>
-      </td>
-      <td className="px-6 py-4 text-right text-sm text-slate-600">
-        {new Date(payment.created_at).toLocaleDateString()}
-      </td>
-      <td className="px-6 py-4 text-right">
-        <Button size="sm" variant="ghost">
-          <Download className="h-4 w-4" />
-        </Button>
-      </td>
-    </tr>
-  );
+  const PaymentRow = ({ payment, status }: any) => {
+    const property = payment.bookings?.inspections?.properties;
+    return (
+      <tr className="border-t border-slate-200 hover:bg-slate-50">
+        <td className="px-6 py-4">
+          <div>
+            <p className="font-medium text-slate-900">{property?.address || 'N/A'}</p>
+            <p className="text-sm text-slate-600">
+              {property?.city ? `${property.city}, ${property.state}` : 'Unknown location'}
+            </p>
+          </div>
+        </td>
+        <td className="px-6 py-4 text-right">
+          <span className="font-semibold text-slate-900">${payment.amount.toFixed(2)}</span>
+        </td>
+        <td className="px-6 py-4">
+          <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${status === 'completed'
+              ? 'bg-green-100 text-green-700'
+              : status === 'pending'
+                ? 'bg-yellow-100 text-yellow-700'
+                : status === 'failed'
+                  ? 'bg-red-100 text-red-700'
+                  : 'bg-gray-100 text-gray-700'
+            }`}>
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </span>
+        </td>
+        <td className="px-6 py-4 text-right text-sm text-slate-600">
+          {new Date(payment.created_at).toLocaleDateString()}
+        </td>
+        <td className="px-6 py-4 text-right">
+          <Button size="sm" variant="ghost">
+            <Download className="h-4 w-4" />
+          </Button>
+        </td>
+      </tr>
+    );
+  };
 
   return (
     <div className="p-8">

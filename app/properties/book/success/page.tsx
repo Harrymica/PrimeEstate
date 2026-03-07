@@ -64,8 +64,21 @@ function BookingSuccessContent() {
             return;
         }
 
-        async function fetchBooking() {
+        async function fetchBookingAndVerifyPayment() {
             try {
+                // If we have a session_id, verify the Stripe payment and update status
+                if (sessionId) {
+                    await fetch('/api/stripe/verify-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            sessionId,
+                            bookingId,
+                        }),
+                    });
+                }
+
+                // Fetch booking details
                 const res = await fetch(`/api/bookings/${bookingId}`);
                 if (!res.ok) throw new Error('Booking not found');
                 const data = await res.json();
@@ -76,8 +89,8 @@ function BookingSuccessContent() {
                 setLoading(false);
             }
         }
-        fetchBooking();
-    }, [bookingId]);
+        fetchBookingAndVerifyPayment();
+    }, [bookingId, sessionId]);
 
     // Auto-trigger PDF download once booking data is loaded
     useEffect(() => {
