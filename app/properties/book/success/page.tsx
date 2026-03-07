@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -46,7 +46,7 @@ interface BookingData {
     };
 }
 
-export default function BookingSuccessPage() {
+function BookingSuccessContent() {
     const searchParams = useSearchParams();
     const bookingId = searchParams.get('booking_id');
     const sessionId = searchParams.get('session_id');
@@ -425,5 +425,22 @@ export default function BookingSuccessPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function BookingSuccessPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="min-h-screen flex items-center justify-center" style={{ background: '#0F2A1D' }}>
+                    <div className="text-center">
+                        <Loader2 className="w-8 h-8 animate-spin mx-auto" style={{ color: '#D4A853' }} />
+                        <p className="mt-4 text-sm" style={{ color: '#A0B8A8' }}>Loading your booking confirmation...</p>
+                    </div>
+                </div>
+            }
+        >
+            <BookingSuccessContent />
+        </Suspense>
     );
 }
