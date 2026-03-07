@@ -19,12 +19,12 @@ export async function POST(request: NextRequest) {
             // Use admin client to bypass RLS for updating
             const supabase = createAdminClient();
 
-            // Update payment status to completed
+            // Update payment status to succeeded
             // Match by stripe_payment_intent_id (which stores the session ID)
             const { error: paymentError } = await supabase
                 .from('payments')
                 .update({
-                    status: 'completed',
+                    status: 'succeeded',
                     updated_at: new Date().toISOString(),
                 })
                 .eq('stripe_payment_intent_id', sessionId);
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
             return NextResponse.json({
                 success: true,
-                paymentStatus: 'completed',
+                paymentStatus: 'succeeded',
                 stripeStatus: session.payment_status,
             });
         }

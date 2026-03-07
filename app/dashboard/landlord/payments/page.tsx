@@ -102,12 +102,12 @@ export default async function PaymentsPage() {
     });
   }
 
-  const completed = allPayments.filter(p => p.status === 'completed');
+  const succeeded = allPayments.filter(p => p.status === 'succeeded');
   const pending = allPayments.filter(p => p.status === 'pending');
   const failed = allPayments.filter(p => p.status === 'failed');
   const refunded = allPayments.filter(p => p.status === 'refunded');
 
-  const totalEarnings = completed.reduce((sum, p) => sum + p.amount, 0);
+  const totalEarnings = succeeded.reduce((sum, p) => sum + p.amount, 0);
   const totalPending = pending.reduce((sum, p) => sum + p.amount, 0);
   const totalAll = allPayments.reduce((sum, p) => sum + p.amount, 0);
 
@@ -137,12 +137,12 @@ export default async function PaymentsPage() {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              Completed
+              Succeeded
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-green-600">${totalEarnings.toFixed(2)}</p>
-            <p className="text-xs text-slate-600 mt-2">{completed.length} payment{completed.length !== 1 ? 's' : ''}</p>
+            <p className="text-xs text-slate-600 mt-2">{succeeded.length} payment{succeeded.length !== 1 ? 's' : ''}</p>
           </CardContent>
         </Card>
 
@@ -176,7 +176,7 @@ export default async function PaymentsPage() {
       <Tabs defaultValue="all" className="w-full">
         <TabsList>
           <TabsTrigger value="all">All ({allPayments.length})</TabsTrigger>
-          <TabsTrigger value="completed">Completed ({completed.length})</TabsTrigger>
+          <TabsTrigger value="succeeded">Succeeded ({succeeded.length})</TabsTrigger>
           <TabsTrigger value="pending">Pending ({pending.length})</TabsTrigger>
           <TabsTrigger value="failed">Failed ({failed.length})</TabsTrigger>
           <TabsTrigger value="refunded">Refunded ({refunded.length})</TabsTrigger>
@@ -187,9 +187,9 @@ export default async function PaymentsPage() {
           <PaymentTable payments={allPayments} emptyMessage="No payments yet" />
         </TabsContent>
 
-        {/* Completed */}
-        <TabsContent value="completed" className="mt-6">
-          <PaymentTable payments={completed} emptyMessage="No completed payments" />
+        {/* Succeeded */}
+        <TabsContent value="succeeded" className="mt-6">
+          <PaymentTable payments={succeeded} emptyMessage="No succeeded payments" />
         </TabsContent>
 
         {/* Pending */}
@@ -256,15 +256,15 @@ function PaymentTable({ payments, emptyMessage }: { payments: EnrichedPayment[];
                     <p className="text-xs text-slate-400 uppercase">{payment.currency}</p>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${payment.status === 'completed'
-                        ? 'bg-green-100 text-green-700'
-                        : payment.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : payment.status === 'failed'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-gray-100 text-gray-700'
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${payment.status === 'succeeded'
+                      ? 'bg-green-100 text-green-700'
+                      : payment.status === 'pending'
+                        ? 'bg-yellow-100 text-yellow-700'
+                        : payment.status === 'failed'
+                          ? 'bg-red-100 text-red-700'
+                          : 'bg-gray-100 text-gray-700'
                       }`}>
-                      {payment.status === 'completed' && <CheckCircle className="h-3 w-3" />}
+                      {payment.status === 'succeeded' && <CheckCircle className="h-3 w-3" />}
                       {payment.status === 'pending' && <Clock className="h-3 w-3" />}
                       {payment.status === 'failed' && <XCircle className="h-3 w-3" />}
                       {payment.status === 'refunded' && <RotateCcw className="h-3 w-3" />}
