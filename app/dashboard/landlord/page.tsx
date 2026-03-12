@@ -31,17 +31,17 @@ export default async function LandlordDashboard() {
   const pendingInspections = inspections?.filter((i: any) => i.status === 'pending') || [];
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 md:mb-8 gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
             Welcome, {profile.full_name || 'Landlord'}!
           </h1>
-          <p className="text-slate-600 mt-2">Manage your properties and inspection requests</p>
+          <p className="text-sm md:text-base text-slate-600 mt-1 md:mt-2">Manage your properties and inspection requests</p>
         </div>
         <Link href="/dashboard/landlord/properties/new">
-          <Button>
+          <Button className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Add Property
           </Button>
@@ -49,7 +49,7 @@ export default async function LandlordDashboard() {
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
@@ -145,13 +145,13 @@ export default async function LandlordDashboard() {
 
       {/* Properties List */}
       <div>
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 md:mb-6 gap-2">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">My Properties</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-slate-900">My Properties</h2>
             <p className="text-slate-600 text-sm mt-1">Manage and monitor your rental properties</p>
           </div>
           <Link href="/dashboard/landlord/properties/new">
-            <Button variant="outline">
+            <Button variant="outline" className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Add New
             </Button>
@@ -159,7 +159,7 @@ export default async function LandlordDashboard() {
         </div>
 
         {properties && properties.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {properties.map((property: any) => (
               <Card key={property.id} className="overflow-hidden hover:shadow-lg transition">
                 {/* Property image */}

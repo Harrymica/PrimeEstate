@@ -29,13 +29,26 @@ export default async function InspectionsPage() {
   const cancelled = allInspections?.filter((i: any) => i.status === 'cancelled') || [];
 
   const InspectionCard = ({ inspection, status }: any) => (
-    <Card key={inspection.id} className="mb-4">
-      <CardContent className="pt-6">
-        <div className="flex items-start justify-between">
+    <Card key={inspection.id} className="mb-3 md:mb-4">
+      <CardContent className="pt-4 md:pt-6">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
           <div className="flex-1">
-            <h3 className="text-lg font-bold text-slate-900 mb-3">
-              {inspection.properties?.address || 'Property'}
-            </h3>
+            <div className="flex items-start justify-between sm:block">
+              <h3 className="text-base md:text-lg font-bold text-slate-900 mb-2 md:mb-3">
+                {inspection.properties?.address || 'Property'}
+              </h3>
+              {/* Status badge — shown inline on mobile, separate column on desktop */}
+              <span className={`sm:hidden inline-block px-3 py-1 rounded text-xs font-semibold ${status === 'pending'
+                ? 'bg-yellow-100 text-yellow-700'
+                : status === 'scheduled'
+                  ? 'bg-blue-100 text-blue-700'
+                  : status === 'completed'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-red-100 text-red-700'
+                }`}>
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </span>
+            </div>
 
             <div className="space-y-2 text-sm text-slate-600 mb-4">
               <div className="flex items-center gap-2">
@@ -70,14 +83,14 @@ export default async function InspectionsPage() {
             )}
           </div>
 
-          <div className="ml-6 text-right">
+          <div className="hidden sm:block ml-6 text-right">
             <span className={`inline-block px-3 py-1 rounded text-xs font-semibold mb-4 ${status === 'pending'
-                ? 'bg-yellow-100 text-yellow-700'
-                : status === 'scheduled'
-                  ? 'bg-blue-100 text-blue-700'
-                  : status === 'completed'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-red-100 text-red-700'
+              ? 'bg-yellow-100 text-yellow-700'
+              : status === 'scheduled'
+                ? 'bg-blue-100 text-blue-700'
+                : status === 'completed'
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-red-100 text-red-700'
               }`}>
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </span>
@@ -103,24 +116,43 @@ export default async function InspectionsPage() {
               </Button>
             </div>
           </div>
+
+          {/* Mobile action buttons */}
+          <div className="flex gap-2 sm:hidden">
+            {status === 'pending' && (
+              <>
+                <Button size="sm" className="flex-1">
+                  Approve
+                </Button>
+                <Button size="sm" variant="outline" className="flex-1 text-red-600">
+                  Reject
+                </Button>
+              </>
+            )}
+            {status === 'scheduled' && (
+              <Button size="sm" variant="outline" className="flex-1">
+                Mark Complete
+              </Button>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
   );
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Inspection Requests</h1>
-        <p className="text-slate-600 mt-2">Manage inspection requests for your properties</p>
+    <div className="p-4 md:p-8">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Inspection Requests</h1>
+        <p className="text-sm md:text-base text-slate-600 mt-1 md:mt-2">Manage inspection requests for your properties</p>
       </div>
 
       <Tabs defaultValue="pending" className="w-full">
-        <TabsList>
-          <TabsTrigger value="pending">Pending ({pending.length})</TabsTrigger>
-          <TabsTrigger value="scheduled">Scheduled ({scheduled.length})</TabsTrigger>
-          <TabsTrigger value="completed">Completed ({completed.length})</TabsTrigger>
-          <TabsTrigger value="cancelled">Cancelled ({cancelled.length})</TabsTrigger>
+        <TabsList className="w-full sm:w-auto grid grid-cols-4 sm:flex">
+          <TabsTrigger value="pending" className="text-xs sm:text-sm">Pending ({pending.length})</TabsTrigger>
+          <TabsTrigger value="scheduled" className="text-xs sm:text-sm">Scheduled ({scheduled.length})</TabsTrigger>
+          <TabsTrigger value="completed" className="text-xs sm:text-sm">Done ({completed.length})</TabsTrigger>
+          <TabsTrigger value="cancelled" className="text-xs sm:text-sm">Cancelled ({cancelled.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="pending" className="mt-6">

@@ -41,13 +41,13 @@ export default async function TenantDashboard() {
     .limit(5);
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
           Welcome, {profile.full_name || 'Tenant'}!
         </h1>
-        <p className="text-slate-600 mt-2">Browse available properties and schedule inspections</p>
+        <p className="text-sm md:text-base text-slate-600 mt-1 md:mt-2">Browse available properties and schedule inspections</p>
       </div>
 
       {/* Quick Stats */}

@@ -45,15 +45,15 @@ export default async function AdminDashboard() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Admin Dashboard</h1>
-        <p className="text-slate-600 mt-2">Overview and management of the entire platform</p>
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Admin Dashboard</h1>
+        <p className="text-sm md:text-base text-slate-600 mt-1 md:mt-2">Overview and management of the entire platform</p>
       </div>
 
       {/* Key Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
@@ -136,11 +136,11 @@ export default async function AdminDashboard() {
 
       {/* Detailed Tabs */}
       <Tabs defaultValue="users" className="w-full">
-        <TabsList className="grid grid-cols-4">
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="inspections">Inspections</TabsTrigger>
-          <TabsTrigger value="payments">Payments</TabsTrigger>
-          <TabsTrigger value="properties">Properties</TabsTrigger>
+        <TabsList className="w-full grid grid-cols-4">
+          <TabsTrigger value="users" className="text-xs sm:text-sm">Users</TabsTrigger>
+          <TabsTrigger value="inspections" className="text-xs sm:text-sm">Inspections</TabsTrigger>
+          <TabsTrigger value="payments" className="text-xs sm:text-sm">Payments</TabsTrigger>
+          <TabsTrigger value="properties" className="text-xs sm:text-sm">Properties</TabsTrigger>
         </TabsList>
 
         <TabsContent value="users" className="mt-6">

@@ -684,7 +684,7 @@ export default async function HomePage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/auth/signup">
-              <span className="btn-gold px-10 py-4 rounded-xl text-base inline-block cursor-pointer">
+              <span className=" btn-gold px-10 py-4 rounded-xl text-base inline-block cursor-pointer">
                 Get Started Now
               </span>
             </Link>

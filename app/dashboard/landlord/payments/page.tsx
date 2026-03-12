@@ -112,14 +112,14 @@ export default async function PaymentsPage() {
   const totalAll = allPayments.reduce((sum, p) => sum + p.amount, 0);
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Payments</h1>
-        <p className="text-slate-600 mt-2">Track payments from inspection bookings</p>
+    <div className="p-4 md:p-8">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Payments</h1>
+        <p className="text-sm md:text-base text-slate-600 mt-1 md:mt-2">Track payments from inspection bookings</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">

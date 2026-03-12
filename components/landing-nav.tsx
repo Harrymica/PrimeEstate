@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Building, LogOut } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import Image from "next/image"
 
 interface LandingNavProps {
     isLoggedIn?: boolean;
@@ -46,12 +47,13 @@ export default function LandingNav({ isLoggedIn = false }: LandingNavProps) {
                 <div className="flex items-center justify-between h-20">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div
+                        {/* <div
                             className="w-10 h-10 rounded-xl flex items-center justify-center"
                             style={{ background: 'linear-gradient(135deg, #D4A853, #E0BC6A)' }}
-                        >
-                            <Building className="w-5 h-5" style={{ color: '#0F2A1D' }} />
-                        </div>
+                        > */}
+                            {/* <Building className="w-5 h-5" style={{ color: '#0F2A1D' }} /> */}
+                            <Image src="icon.svg" width={18} height={18} content='cover'  className="w-5 h-5" style={{ color: '#0F2A1D' }} />
+                        {/* </div> */}
                         <span className="text-xl font-bold tracking-tight text-white">
                             Prime<span style={{ color: '#D4A853' }}>Estate</span>
                         </span>
@@ -114,7 +116,7 @@ export default function LandingNav({ isLoggedIn = false }: LandingNavProps) {
                                     </button>
                                 </Link>
                                 <Link href="/auth/signup">
-                                    <button className="btn-gold px-5 py-2.5 rounded-xl text-sm cursor-pointer">
+                                    <button className="btn-gold px-3 py-2 rounded-xl text-xs sm:px-5 sm:py-2.5 sm:text-sm cursor-pointer max-w-sm">
                                         Get Started
                                     </button>
                                 </Link>
