@@ -161,89 +161,91 @@ export default async function LandlordDashboard() {
         {properties && properties.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {properties.map((property: any) => (
-              <Card key={property.id} className="overflow-hidden hover:shadow-lg transition">
-                {/* Property image */}
-                {(() => {
-                  const imgs = parseImageUrls(property.image_url);
-                  return imgs.length > 0 ? (
-                    <div className="aspect-video relative overflow-hidden">
-                      <Image
-                        src={imgs[0]}
-                        alt={property.address}
-                        fill
-                        className="object-cover"
-                      />
+              <Link href={`/properties/${property.id}`}>
+                <Card key={property.id} className="overflow-hidden hover:shadow-lg transition p-0">
+                  {/* Property image */}
+                  {(() => {
+                    const imgs = parseImageUrls(property.image_url);
+                    return imgs.length > 0 ? (
+                      <div className="aspect-video relative overflow-hidden">
+                        <Image
+                          src={imgs[0]}
+                          alt={property.address}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                        <Home className="h-12 w-12 text-blue-400" />
+                      </div>
+                    );
+                  })()}
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg text-slate-900">{property.address}</h3>
+                        <p className="text-sm text-slate-600 flex items-center gap-1 mt-1">
+                          <MapPin className="h-4 w-4" />
+                          {property.city}, {property.state} {property.postal_code}
+                        </p>
+                      </div>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${property.is_available
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-yellow-100 text-yellow-700'
+                          }`}
+                      >
+                        {property.is_available ? 'Available' : 'Unavailable'}
+                      </span>
                     </div>
-                  ) : (
-                    <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                      <Home className="h-12 w-12 text-blue-400" />
-                    </div>
-                  );
-                })()}
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="font-bold text-lg text-slate-900">{property.address}</h3>
-                      <p className="text-sm text-slate-600 flex items-center gap-1 mt-1">
-                        <MapPin className="h-4 w-4" />
-                        {property.city}, {property.state} {property.postal_code}
-                      </p>
-                    </div>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${property.is_available
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-yellow-100 text-yellow-700'
-                        }`}
-                    >
-                      {property.is_available ? 'Available' : 'Unavailable'}
-                    </span>
-                  </div>
 
-                  {property.description && (
-                    <p className="text-sm text-slate-600 mb-4 line-clamp-2">{property.description}</p>
-                  )}
+                    {property.description && (
+                      <p className="text-sm text-slate-600 mb-4 line-clamp-2">{property.description}</p>
+                    )}
 
-                  <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                    <div>
-                      <p className="text-slate-500">Units</p>
-                      <p className="font-semibold text-slate-900">{property.units || 1}</p>
+                    <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                      <div>
+                        <p className="text-slate-500">Units</p>
+                        <p className="font-semibold text-slate-900">{property.units || 1}</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500">Listed</p>
+                        <p className="font-semibold text-slate-900">
+                          {new Date(property.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-slate-500">Listed</p>
-                      <p className="font-semibold text-slate-900">
-                        {new Date(property.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
 
-                  {property.amenities && property.amenities.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {property.amenities.slice(0, 4).map((amenity: string, i: number) => (
-                        <span
-                          key={i}
-                          className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full"
-                        >
-                          {amenity}
-                        </span>
-                      ))}
-                      {property.amenities.length > 4 && (
-                        <span className="px-2 py-0.5 text-xs bg-slate-100 text-slate-600 rounded-full">
-                          +{property.amenities.length - 4} more
-                        </span>
-                      )}
-                    </div>
-                  )}
+                    {property.amenities && property.amenities.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {property.amenities.slice(0, 4).map((amenity: string, i: number) => (
+                          <span
+                            key={i}
+                            className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full"
+                          >
+                            {amenity}
+                          </span>
+                        ))}
+                        {property.amenities.length > 4 && (
+                          <span className="px-2 py-0.5 text-xs bg-slate-100 text-slate-600 rounded-full">
+                            +{property.amenities.length - 4} more
+                          </span>
+                        )}
+                      </div>
+                    )}
 
-                  <div className="flex gap-2 pt-4 border-t border-slate-100">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      Edit
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-red-600">
-                      Delete
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                    <div className="flex gap-2 pt-4 border-t border-slate-100">
+                      <Button variant="outline" size="sm" className="flex-1">
+                        Edit
+                      </Button>
+                      <Button variant="outline" size="sm" className="text-red-600">
+                        Delete
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         ) : (

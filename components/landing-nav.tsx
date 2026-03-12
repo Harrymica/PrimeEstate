@@ -51,8 +51,8 @@ export default function LandingNav({ isLoggedIn = false }: LandingNavProps) {
                             className="w-10 h-10 rounded-xl flex items-center justify-center"
                             style={{ background: 'linear-gradient(135deg, #D4A853, #E0BC6A)' }}
                         > */}
-                            {/* <Building className="w-5 h-5" style={{ color: '#0F2A1D' }} /> */}
-                            <Image src="icon.svg" width={18} height={18} content='cover'  className="w-5 h-5" style={{ color: '#0F2A1D' }} />
+                        {/* <Building className="w-5 h-5" style={{ color: '#0F2A1D' }} /> */}
+                        <Image src="/icon.svg" width={18} height={18} content='cover' className="w-5 h-5" style={{ color: '#0F2A1D' }} />
                         {/* </div> */}
                         <span className="text-xl font-bold tracking-tight text-white">
                             Prime<span style={{ color: '#D4A853' }}>Estate</span>

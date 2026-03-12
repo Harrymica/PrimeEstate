@@ -15,6 +15,7 @@ import {
   LayoutDashboard,
   Search,
 } from 'lucide-react';
+import Image from 'next/image';
 
 export default async function DashboardLayout({
   children,
@@ -70,8 +71,10 @@ export default async function DashboardLayout({
       {/* Desktop Sidebar — hidden on mobile */}
       <aside className="hidden md:flex w-64 border-r border-slate-200 bg-white shadow-sm flex-col flex-shrink-0">
         <div className="border-b border-slate-200 p-6 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center" style={{ color: '#0F2A1D' }}>
             <Home className="h-5 w-5 text-white" />
+            {/* <Image src="/icon.svg" alt='logo' width={18} height={18} content='cover' className="w-5 h-5" /> */}
+
           </div>
           <div>
             <h1 className="text-lg font-bold text-slate-900">PrimeEstate</h1>

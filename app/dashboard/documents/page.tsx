@@ -15,19 +15,19 @@ export default async function DocumentsPage() {
     .order('created_at', { ascending: false });
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Documents</h1>
-        <p className="text-slate-600 mt-2">View your contracts, invoices, and uploaded files</p>
+    <div className="p-4 md:p-8">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Documents</h1>
+        <p className="text-sm md:text-base text-slate-600 mt-1 md:mt-2">View your contracts, invoices, and uploaded files</p>
       </div>
 
       {documents && documents.length > 0 ? (
         <div className="space-y-4">
           {documents.map((doc: any) => (
             <Card key={doc.id}>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+              <CardContent className="pt-4 md:pt-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-3 md:gap-4">
                     <div className="bg-slate-100 p-3 rounded-lg">
                       <FileText className="h-6 w-6 text-slate-600" />
                     </div>
@@ -46,10 +46,10 @@ export default async function DocumentsPage() {
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 ml-auto sm:ml-0">
                     <Button variant="outline" size="sm">
-                      <Download className="h-4 w-4 mr-2" />
-                      Download
+                      <Download className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Download</span>
                     </Button>
                     <Button variant="outline" size="sm" className="text-red-600">
                       <Trash2 className="h-4 w-4" />

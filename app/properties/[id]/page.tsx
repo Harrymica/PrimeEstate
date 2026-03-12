@@ -6,6 +6,7 @@ import { getCurrentUser } from '@/lib/auth-helpers';
 import { parseImageUrls } from '@/lib/parse-images';
 import LandingNav from '@/components/landing-nav';
 import MobileBookingCTA from '@/components/mobile-booking-cta';
+import PropertyImageGallery from '@/components/property-image-gallery';
 import {
     MapPin,
     Building2,
@@ -65,7 +66,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             <LandingNav isLoggedIn={!!user} />
 
             {/* Back Link */}
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-28 pb-4 relative z-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28 pb-4 relative z-10">
                 <Link
                     href="/properties"
                     className="inline-flex items-center gap-2 text-sm font-medium transition-colors duration-200"
@@ -77,63 +78,22 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             </div>
 
             {/* Image Gallery */}
-            <section className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 {images.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded-2xl overflow-hidden">
-                        {/* Main image */}
-                        <div className="relative h-72 md:h-[440px]">
-                            <Image
-                                src={images[0]}
-                                alt={property.address}
-                                fill
-                                className="object-cover"
-                            />
-                        </div>
-
-                        {/* Side images */}
-                        <div className="grid grid-cols-2 gap-3">
-                            {images.slice(1, 5).map((url: string, i: number) => (
-                                <div key={i} className="relative h-[130px] md:h-[214px]">
-                                    <Image
-                                        src={url}
-                                        alt={`${property.address} - Photo ${i + 2}`}
-                                        fill
-                                        className="object-cover"
-                                    />
-                                    {/* "More photos" overlay on last visible image */}
-                                    {i === 3 && images.length > 5 && (
-                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                            <span className="text-white font-bold text-lg">+{images.length - 5} more</span>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                            {/* Fill empty grid slots */}
-                            {images.length < 5 &&
-                                Array.from({ length: Math.min(4, 5 - images.length) }).map((_, i) => (
-                                    <div
-                                        key={`empty-${i}`}
-                                        className="h-[130px] md:h-[214px] flex items-center justify-center rounded-sm"
-                                        style={{ background: '#1A3C2A' }}
-                                    >
-                                        <Home className="w-8 h-8" style={{ color: 'rgba(212,168,83,0.2)' }} />
-                                    </div>
-                                ))}
-                        </div>
-                    </div>
+                    <PropertyImageGallery images={images} address={property.address} />
                 ) : (
                     <div
-                        className="h-72 md:h-96 rounded-2xl flex items-center justify-center"
+                        className="h-56 sm:h-72 md:h-96 rounded-2xl flex items-center justify-center"
                         style={{ background: 'linear-gradient(135deg, #1A3C2A, #2A5A3A)' }}
                     >
-                        <Home className="w-20 h-20" style={{ color: 'rgba(212,168,83,0.2)' }} />
+                        <Home className="w-16 h-16 md:w-20 md:h-20" style={{ color: 'rgba(212,168,83,0.2)' }} />
                     </div>
                 )}
             </section>
 
             {/* Content */}
-            <section className="max-w-7xl mx-auto px-6 lg:px-8 py-10 relative z-10">
-                <div className="grid lg:grid-cols-3 gap-10">
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 relative z-10">
+                <div className="grid lg:grid-cols-3 gap-8 md:gap-10">
                     {/* Left: Property Info */}
                     <div className="lg:col-span-2 space-y-8">
                         {/* Title & Location */}
@@ -158,7 +118,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                                     })}
                                 </span>
                             </div>
-                            <h1 className="text-3xl sm:text-4xl font-bold mb-3">{property.address}</h1>
+                            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3">{property.address}</h1>
                             <div className="flex items-center gap-2">
                                 <MapPin className="w-5 h-5" style={{ color: '#D4A853' }} />
                                 <span className="text-lg" style={{ color: '#A0B8A8' }}>

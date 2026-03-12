@@ -209,7 +209,7 @@ export default function NewPropertyPage() {
 
     if (success) {
         return (
-            <div className="p-8 max-w-2xl mx-auto">
+            <div className="p-4 md:p-8 max-w-2xl mx-auto">
                 <Card className="border-green-200 bg-green-50">
                     <CardContent className="pt-12 pb-12 text-center">
                         <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
@@ -225,9 +225,9 @@ export default function NewPropertyPage() {
     }
 
     return (
-        <div className="p-8 max-w-3xl mx-auto">
+        <div className="p-4 md:p-8 max-w-3xl mx-auto">
             {/* Header */}
-            <div className="mb-8">
+            <div className="mb-6 md:mb-8">
                 <Link
                     href="/dashboard/landlord"
                     className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition mb-4"
@@ -235,8 +235,8 @@ export default function NewPropertyPage() {
                     <ArrowLeft className="h-4 w-4" />
                     Back to Dashboard
                 </Link>
-                <h1 className="text-3xl font-bold text-slate-900">Add New Property</h1>
-                <p className="text-slate-600 mt-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Add New Property</h1>
+                <p className="text-sm md:text-base text-slate-600 mt-1 md:mt-2">
                     Fill in the details below to list your property for inspections
                 </p>
             </div>
@@ -556,8 +556,8 @@ export default function NewPropertyPage() {
                                         }}
                                         disabled={amenities.includes(a)}
                                         className={`px-3 py-1.5 text-xs rounded-full border transition cursor-pointer ${amenities.includes(a)
-                                                ? 'bg-blue-100 text-blue-700 border-blue-200 opacity-50 cursor-not-allowed'
-                                                : 'bg-white text-slate-700 border-slate-200 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'
+                                            ? 'bg-blue-100 text-blue-700 border-blue-200 opacity-50 cursor-not-allowed'
+                                            : 'bg-white text-slate-700 border-slate-200 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'
                                             }`}
                                     >
                                         {a}
@@ -593,13 +593,13 @@ export default function NewPropertyPage() {
                 </Card>
 
                 {/* Submit Section */}
-                <div className="flex items-center justify-between pt-4">
+                <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-4">
                     <Link href="/dashboard/landlord">
-                        <Button type="button" variant="outline">
+                        <Button type="button" variant="outline" className="w-full sm:w-auto">
                             Cancel
                         </Button>
                     </Link>
-                    <Button type="submit" disabled={loading || uploadingImages} className="min-w-[200px]">
+                    <Button type="submit" disabled={loading || uploadingImages} className="w-full sm:w-auto sm:min-w-[200px]">
                         {loading ? (
                             <>
                                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

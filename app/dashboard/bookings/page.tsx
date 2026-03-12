@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, MapPin } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function BookingsPage() {
   const user = await requireAuth();
@@ -15,20 +16,20 @@ export default async function BookingsPage() {
     .order('scheduled_date', { ascending: true });
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">My Bookings</h1>
-        <p className="text-slate-600 mt-2">View and manage your inspection appointments</p>
+    <div className="p-4 md:p-8">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900">My Bookings</h1>
+        <p className="text-sm md:text-base text-slate-600 mt-1 md:mt-2">View and manage your inspection appointments</p>
       </div>
 
       {bookings && bookings.length > 0 ? (
         <div className="space-y-4">
           {bookings.map((booking: any) => (
             <Card key={booking.id}>
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
+              <CardContent className="pt-4 md:pt-6">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-slate-900 mb-4">
+                    <h3 className="text-base md:text-lg font-bold text-slate-900 mb-3 md:mb-4">
                       {booking.inspections?.properties?.title}
                     </h3>
 
@@ -71,7 +72,7 @@ export default async function BookingsPage() {
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 mt-2 sm:mt-0">
                     <Button variant="outline" size="sm">
                       Edit
                     </Button>
@@ -88,7 +89,7 @@ export default async function BookingsPage() {
         <Card>
           <CardContent className="pt-12 pb-12 text-center">
             <p className="text-slate-600 mb-4">You haven&apos;t booked any inspections yet</p>
-            <Button href="/dashboard">Browse Properties</Button>
+            <Link href="/dashboard"><Button>Browse Properties</Button></Link>
           </CardContent>
         </Card>
       )}
