@@ -74,15 +74,17 @@ export default async function BrowsePropertiesPage() {
                     <div
                         className="mt-10 max-w-2xl mx-auto search-glass rounded-2xl p-4 animate-fade-in-up-delay-3"
                     >
-                        <div className="flex items-center gap-3">
-                            <Search className="w-5 h-5 flex-shrink-0" style={{ color: '#D4A853' }} />
-                            <input
-                                type="text"
-                                placeholder="Search by city, state, or address..."
-                                className="flex-1 bg-transparent text-white placeholder:text-gray-400 focus:outline-none text-sm"
-                                disabled
-                            />
-                            <button className="btn-gold px-5 py-2.5 rounded-xl text-sm cursor-pointer flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <Search className="w-5 h-5 flex-shrink-0" style={{ color: '#D4A853' }} />
+                                <input
+                                    type="text"
+                                    placeholder="Search by city, state, or address..."
+                                    className="flex-1 min-w-0 bg-transparent text-white placeholder:text-gray-400 focus:outline-none text-sm"
+                                    disabled
+                                />
+                            </div>
+                            <button className="btn-gold w-full sm:w-auto px-4 py-2 rounded-xl text-xs sm:px-5 sm:py-2.5 sm:text-sm cursor-pointer flex items-center justify-center gap-2">
                                 <SlidersHorizontal className="w-4 h-4" />
                                 Search
                             </button>
@@ -103,9 +105,9 @@ export default async function BrowsePropertiesPage() {
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
                     {/* Results count */}
                     <div className="flex items-center justify-between mb-10">
-                        <p className="text-sm" style={{ color: '#A0B8A8' }}>
+                      {/*  <p className="text-sm" style={{ color: '#A0B8A8' }}>
                             <span className="font-bold text-white">{properties?.length || 0}</span> properties available
-                        </p>
+                        </p>*/}
                     </div>
 
                     {properties && properties.length > 0 ? (
@@ -239,7 +241,7 @@ export default async function BrowsePropertiesPage() {
                                                     <p className="text-lg font-bold" style={{ color: '#D4A853' }}>
                                                         $50
                                                         <span className="text-xs font-normal ml-1" style={{ color: '#6B8B73' }}>
-                                                            refundable
+                                                            refundable inspection fee
                                                         </span>
                                                     </p>
                                                     <span
