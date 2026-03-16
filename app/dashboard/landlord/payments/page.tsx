@@ -13,7 +13,7 @@ interface EnrichedPayment {
   currency: string;
   status: string;
   created_at: string;
-  stripe_payment_intent_id: string;
+  flutterwave_tx_ref: string;
   // Enriched data
   tenantName: string;
   tenantEmail: string;

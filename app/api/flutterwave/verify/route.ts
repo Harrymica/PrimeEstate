@@ -1,33 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function POST(request: NextRequest) {
     try {
-        const { sessionId, bookingId } = await request.json();
+        const { transactionId, tx_ref, bookingId } = await request.json();
 
-        if (!sessionId) {
-            return NextResponse.json({ error: 'Missing session ID' }, { status: 400 });
+        if (!transactionId && !tx_ref) {
+            return NextResponse.json({ error: 'Missing transaction ID or tx_ref' }, { status: 400 });
         }
 
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+        // Verify the transaction with Flutterwave API
+        const verifyRes = await fetch(
+            `https://api.flutterwave.com/v3/transactions/${transactionId}/verify`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
+                },
+            }
+        );
 
-        // Retrieve the Checkout Session from Stripe to verify payment
-        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        const verifyData = await verifyRes.json();
 
-        if (session.payment_status === 'paid') {
+        if (
+            verifyData.status === 'success' &&
+            verifyData.data.status === 'successful'
+        ) {
             // Use admin client to bypass RLS for updating
             const supabase = createAdminClient();
 
             // Update payment status to succeeded
-            // Match by stripe_payment_intent_id (which stores the session ID)
+            // Match by flutterwave_tx_ref
+            const matchRef = tx_ref || verifyData.data.tx_ref;
             const { error: paymentError } = await supabase
                 .from('payments')
                 .update({
                     status: 'succeeded',
+                    flutterwave_transaction_id: String(transactionId),
                     updated_at: new Date().toISOString(),
                 })
-                .eq('stripe_payment_intent_id', sessionId);
+                .eq('flutterwave_tx_ref', matchRef);
 
             if (paymentError) {
                 console.error('Error updating payment status:', paymentError);
@@ -50,19 +63,19 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({
                 success: true,
                 paymentStatus: 'succeeded',
-                stripeStatus: session.payment_status,
+                flutterwaveStatus: verifyData.data.status,
             });
         }
 
         return NextResponse.json({
             success: false,
             paymentStatus: 'pending',
-            stripeStatus: session.payment_status,
+            flutterwaveStatus: verifyData.data?.status || 'unknown',
         });
     } catch (error) {
-        console.error('Stripe session verification error:', error);
+        console.error('Flutterwave verification error:', error);
         return NextResponse.json(
-            { error: 'Failed to verify payment session' },
+            { error: 'Failed to verify payment' },
             { status: 500 }
         );
     }

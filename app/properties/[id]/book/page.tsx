@@ -101,8 +101,8 @@ export default function BookInspectionPage({ params }: { params: Promise<{ id: s
                 throw new Error(bookingData.error || 'Failed to create booking');
             }
 
-            // Step 3: Create Stripe Checkout Session & redirect
-            const checkoutRes = await fetch('/api/stripe/checkout', {
+            // Step 3: Create Flutterwave Checkout & redirect
+            const checkoutRes = await fetch('/api/flutterwave/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -119,7 +119,7 @@ export default function BookInspectionPage({ params }: { params: Promise<{ id: s
                 throw new Error(checkoutData.error || 'Failed to create checkout session');
             }
 
-            // Redirect to Stripe Checkout
+            // Redirect to Flutterwave Checkout
             if (checkoutData.url) {
                 window.location.href = checkoutData.url;
             } else {
@@ -291,7 +291,7 @@ export default function BookInspectionPage({ params }: { params: Promise<{ id: s
                             {paying ? (
                                 <>
                                     <Loader2 className="w-4 h-4 animate-spin" />
-                                    Redirecting to Stripe...
+                                    Redirecting to Flutterwave...
                                 </>
                             ) : (
                                 <>
@@ -304,7 +304,7 @@ export default function BookInspectionPage({ params }: { params: Promise<{ id: s
 
                         <p className="text-center text-xs" style={{ color: '#6B8B73' }}>
                             <Shield className="w-3 h-3 inline mr-1" />
-                            You&apos;ll be redirected to Stripe&apos;s secure checkout. Refundable within 48 hours.
+                            You&apos;ll be redirected to Flutterwave&apos;s secure checkout. Refundable within 48 hours.
                         </p>
                     </div>
 
@@ -343,7 +343,7 @@ export default function BookInspectionPage({ params }: { params: Promise<{ id: s
 
                             <div className="space-y-2.5 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                                 {[
-                                    'Redirected to Stripe secure checkout',
+                                    'Secure payment via Flutterwave',
                                     'Private exclusive inspection slot',
                                     'Refundable within 48 hours after viewing',
                                     'Booking confirmation PDF on success',

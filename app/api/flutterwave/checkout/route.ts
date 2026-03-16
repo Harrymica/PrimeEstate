@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -11,7 +10,6 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
         const { inspectionId, bookingId, propertyAddress, amount } = await request.json();
 
         if (!bookingId || !amount) {
@@ -44,34 +42,49 @@ export async function POST(request: NextRequest) {
 
         const origin = request.headers.get('origin') || 'http://localhost:3000';
 
-        // Create Stripe Checkout Session with customer email pre-filled
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            mode: 'payment',
-            customer_email: user.email || undefined,
-            line_items: [
-                {
-                    price_data: {
-                        currency: 'usd',
-                        product_data: {
-                            name: 'Property Inspection Reservation Fee',
-                            description: propertyAddress
-                                ? `Refundable inspection reservation for ${propertyAddress}`
-                                : 'Refundable property inspection reservation fee',
-                        },
-                        unit_amount: Math.round(amount * 100), // cents
-                    },
-                    quantity: 1,
-                },
-            ],
-            metadata: {
-                bookingId,
-                inspectionId: inspectionId || '',
-                userId: user.id,
+        // Generate a unique transaction reference
+        const tx_ref = `PE-${bookingId}-${Date.now()}`;
+
+        // Create Flutterwave payment link via their API
+        const flutterwaveRes = await fetch('https://api.flutterwave.com/v3/payments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
             },
-            success_url: `${origin}/properties/book/success?session_id={CHECKOUT_SESSION_ID}&booking_id=${bookingId}`,
-            cancel_url: `${origin}/properties`,
+            body: JSON.stringify({
+                tx_ref,
+                amount,
+                currency: 'USD',
+                redirect_url: `${origin}/properties/book/success?tx_ref=${tx_ref}&booking_id=${bookingId}`,
+                customer: {
+                    email: user.email || '',
+                    name: user.user_metadata?.full_name || user.email || '',
+                },
+                customizations: {
+                    title: 'PrimeEstate',
+                    description: propertyAddress
+                        ? `Refundable inspection reservation for ${propertyAddress}`
+                        : 'Refundable property inspection reservation fee',
+                    logo: `${origin}/logo.png`,
+                },
+                meta: {
+                    bookingId,
+                    inspectionId: inspectionId || '',
+                    userId: user.id,
+                },
+            }),
         });
+
+        const flutterwaveData = await flutterwaveRes.json();
+
+        if (flutterwaveData.status !== 'success') {
+            console.error('Flutterwave error:', flutterwaveData);
+            return NextResponse.json(
+                { error: flutterwaveData.message || 'Failed to create payment link' },
+                { status: 500 }
+            );
+        }
 
         // Save payment record with status pending, including landlord_id
         const supabase = await createClient();
@@ -80,18 +93,17 @@ export async function POST(request: NextRequest) {
             tenant_id: user.id,
             landlord_id: landlordId,
             amount,
-            currency: 'usd',
+            currency: 'NGN',
             status: 'pending',
-            stripe_payment_intent_id: session.id,
+            flutterwave_tx_ref: tx_ref,
         });
 
-        return NextResponse.json({ url: session.url });
+        return NextResponse.json({ url: flutterwaveData.data.link });
     } catch (error) {
-        console.error('Stripe checkout error:', error);
+        console.error('Flutterwave checkout error:', error);
         return NextResponse.json(
             { error: 'Failed to create checkout session' },
             { status: 500 }
         );
     }
 }
-

@@ -63,8 +63,8 @@ export interface Payment {
   amount: number;
   currency: string;
   status: 'pending' | 'completed' | 'failed' | 'refunded';
-  stripe_payment_intent_id?: string;
-  stripe_charge_id?: string;
+  flutterwave_tx_ref?: string;
+  flutterwave_transaction_id?: string;
   created_at: string;
   updated_at: string;
 }

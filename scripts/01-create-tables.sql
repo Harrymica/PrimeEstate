@@ -69,8 +69,8 @@ CREATE TABLE payments (
   amount DECIMAL(10, 2) NOT NULL,
   currency VARCHAR(3) NOT NULL DEFAULT 'USD',
   status payment_status NOT NULL DEFAULT 'pending',
-  stripe_payment_intent_id VARCHAR(255),
-  stripe_charge_id VARCHAR(255),
+  flutterwave_tx_ref VARCHAR(255),
+  flutterwave_transaction_id VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -111,7 +111,7 @@ CREATE INDEX idx_bookings_status ON bookings(status);
 CREATE INDEX idx_payments_booking_id ON payments(booking_id);
 CREATE INDEX idx_payments_tenant_id ON payments(tenant_id);
 CREATE INDEX idx_payments_status ON payments(status);
-CREATE INDEX idx_payments_stripe_id ON payments(stripe_payment_intent_id);
+CREATE INDEX idx_payments_flutterwave_ref ON payments(flutterwave_tx_ref);
 CREATE INDEX idx_documents_tenant_id ON documents(tenant_id);
 CREATE INDEX idx_documents_booking_id ON documents(booking_id);
 CREATE INDEX idx_notifications_user_id ON notifications(user_id);

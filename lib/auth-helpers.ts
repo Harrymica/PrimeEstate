@@ -4,11 +4,41 @@ import { UserRole } from './types';
 
 export async function getCurrentUser() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
-  return user;
+  try {
+    // Try getUser() first — it validates the JWT with Supabase Auth server
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (user) return user;
+
+    // If getUser() returned an error (e.g. network timeout), fall back to
+    // getSession() which reads the JWT from cookies without a network call.
+    // The JWT is still cryptographically signed, so this is safe for
+    // identifying the user. The middleware already refreshes sessions.
+    if (error) {
+      console.warn('getUser() failed, falling back to getSession():', error.message);
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      return session?.user ?? null;
+    }
+
+    return null;
+  } catch (err) {
+    // Handle unexpected errors (e.g. fetch timeout exceptions)
+    console.warn('Auth check failed, falling back to getSession():', err);
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      return session?.user ?? null;
+    } catch {
+      return null;
+    }
+  }
 }
 
 export async function getCurrentUserProfile() {

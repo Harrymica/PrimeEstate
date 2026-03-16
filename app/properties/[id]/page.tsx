@@ -286,7 +286,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
                             <p className="text-center text-xs" style={{ color: '#6B8B73' }}>
                                 <Shield className="w-3 h-3 inline mr-1" />
-                                Secure payment powered by Stripe
+                                Secure payment powered by Flutterwave
                             </p>
 
                             {/* Landlord Info */}

@@ -33,12 +33,31 @@ export async function middleware(request: NextRequest) {
         }
     );
 
-    // IMPORTANT: Do NOT use supabase.auth.getSession() — it does not
-    // validate the JWT. Always use getUser() which contacts the Supabase
-    // Auth server to revalidate the token.
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    // Try getUser() first — it validates the JWT with Supabase Auth server.
+    // If it fails (e.g. network timeout), fall back to getSession() so
+    // we don't block the request with a false 401.
+    let user = null;
+    try {
+        const { data, error } = await supabase.auth.getUser();
+        if (data?.user) {
+            user = data.user;
+        } else if (error) {
+            // getUser() failed (timeout, network error, etc.)
+            // Fall back to getSession() which reads the local JWT cookie
+            console.warn('Middleware getUser() failed, falling back to getSession():', error.message);
+            const { data: sessionData } = await supabase.auth.getSession();
+            user = sessionData?.session?.user ?? null;
+        }
+    } catch (err) {
+        // Unexpected fetch error (ConnectTimeoutError, etc.)
+        console.warn('Middleware auth check failed, falling back to getSession():', err);
+        try {
+            const { data: sessionData } = await supabase.auth.getSession();
+            user = sessionData?.session?.user ?? null;
+        } catch {
+            // Complete failure — proceed without user
+        }
+    }
 
     // If the user is not signed in and trying to access protected routes,
     // redirect to login

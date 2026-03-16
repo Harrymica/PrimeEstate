@@ -49,7 +49,8 @@ interface BookingData {
 function BookingSuccessContent() {
     const searchParams = useSearchParams();
     const bookingId = searchParams.get('booking_id');
-    const sessionId = searchParams.get('session_id');
+    const transactionId = searchParams.get('transaction_id');
+    const txRef = searchParams.get('tx_ref');
 
     const [booking, setBooking] = useState<BookingData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -66,13 +67,14 @@ function BookingSuccessContent() {
 
         async function fetchBookingAndVerifyPayment() {
             try {
-                // If we have a session_id, verify the Stripe payment and update status
-                if (sessionId) {
-                    await fetch('/api/stripe/verify-session', {
+                // If we have a transaction_id, verify the Flutterwave payment and update status
+                if (transactionId) {
+                    await fetch('/api/flutterwave/verify', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            sessionId,
+                            transactionId,
+                            tx_ref: txRef,
                             bookingId,
                         }),
                     });
@@ -90,7 +92,7 @@ function BookingSuccessContent() {
             }
         }
         fetchBookingAndVerifyPayment();
-    }, [bookingId, sessionId]);
+    }, [bookingId, transactionId, txRef]);
 
     // Auto-trigger PDF download once booking data is loaded
     useEffect(() => {
